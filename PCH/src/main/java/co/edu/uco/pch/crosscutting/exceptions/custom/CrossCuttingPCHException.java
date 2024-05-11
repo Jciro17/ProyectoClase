@@ -1,4 +1,4 @@
-package co.edu.uco.pch.crosscutting.exceptions.customs;
+package co.edu.uco.pch.crosscutting.exceptions.custom;
 
 import co.edu.uco.pch.crosscutting.exceptions.PCHException;
 import co.edu.uco.pch.crosscutting.exceptions.enums.Lugar;
