@@ -8,14 +8,14 @@ import co.edu.uco.pch.crosscutting.exceptions.messagecatalog.data.CodigoMensaje;
 import co.edu.uco.pch.crosscutting.helpers.SQLHelper;
 
 	
-public class SqlConecction{
+public class SqlConnection{
 	
 	private Connection conexion;
 	
-	protected SqlConecction(final Connection conexion) {
+	protected SqlConnection(final Connection conexion) {
 		setConexion(conexion);
 	}
-	protected SqlConecction() {
+	protected SqlConnection() {
 		super();
 	}
 	protected final Connection getConexion() {

@@ -8,14 +8,19 @@ public final class ControllerPCHException extends PCHException {
 	private static final long serialVersionUID = -1179319726524825522L;
 
 	public ControllerPCHException(final String mensajeUsuario) {
-		super(mensajeUsuario, Lugar.DATA);
+		super(mensajeUsuario, Lugar.CONTROLLER);
 
 	}
 	
+	public ControllerPCHException(final String mensajeTecnico, final String mensajeUsuario) {
+		super(mensajeTecnico, mensajeUsuario, Lugar.BUSINESS);
+	}
+	
 	public ControllerPCHException(final String mensajeTecnico,final String mensajeUsuario,final  Lugar lugar,Throwable excepcionRaiz) {
-		super(mensajeTecnico,mensajeUsuario, Lugar.DATA,excepcionRaiz);
+		super(mensajeTecnico,mensajeUsuario, Lugar.CONTROLLER,excepcionRaiz);
 
 	}
+
 	
 
 }

@@ -2,19 +2,20 @@ package co.edu.uco.pch.data.dao.factory.concrete;
 
 
 import java.sql.DriverManager;
+
 import java.sql.SQLException;
 
 import co.edu.uco.pch.crosscutting.helpers.SQLHelper;
 import co.edu.uco.pch.data.dao.entity.CiudadDAO;
 import co.edu.uco.pch.data.dao.entity.DepartamentoDAO;
 import co.edu.uco.pch.data.dao.entity.PaisDAO;
-import co.edu.uco.pch.data.dao.entity.concrete.SqlConecction;
+import co.edu.uco.pch.data.dao.entity.concrete.SqlConnection;
 import co.edu.uco.pch.data.dao.entity.concrete.azuresql.CiudadAzureSqlDAO;
 import co.edu.uco.pch.data.dao.entity.concrete.azuresql.DepartamentoAzureSqlDAO;
 import co.edu.uco.pch.data.dao.entity.concrete.azuresql.PaisAzureSqlDAO;
 import co.edu.uco.pch.data.dao.factory.DAOFactory;
 
-public final class AzureSQLDAOFactory extends SqlConecction implements DAOFactory {
+public final class AzureSQLDAOFactory extends SqlConnection implements DAOFactory {
 
 	public AzureSQLDAOFactory() {
 		super();
