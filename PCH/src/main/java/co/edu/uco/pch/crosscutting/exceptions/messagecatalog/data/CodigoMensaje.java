@@ -2,6 +2,7 @@ package co.edu.uco.pch.crosscutting.exceptions.messagecatalog.data;
 
 import static co.edu.uco.pch.crosscutting.helpers.TextHelper.concatenate;
 
+
 import static co.edu.uco.pch.crosscutting.helpers.TextHelper.UNDERLINE;
 
 public enum CodigoMensaje {

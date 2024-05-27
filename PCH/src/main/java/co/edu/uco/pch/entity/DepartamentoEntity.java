@@ -2,46 +2,56 @@ package co.edu.uco.pch.entity;
 
 import java.util.UUID;
 
-public class DepartamentoEntity { 
-	private PaisEntity pais;
+import co.edu.uco.pch.crosscutting.helpers.ObjectHelper;
+import co.edu.uco.pch.crosscutting.helpers.TextHelper;
+import co.edu.uco.pch.crosscutting.helpers.UUIDHelper;
+
+public final class DepartamentoEntity {
+
 	private UUID id;
 	private String nombre;
-	
+	private PaisEntity pais;
+
 	public DepartamentoEntity() {
-		super();
+		setId(UUIDHelper.getDefault());
+		setNombre(TextHelper.EMPTY);
+		setPais(PaisEntity.build());
 	}
-	
-	public DepartamentoEntity(final PaisEntity pais,final UUID id,final String nombre) {
-		setPais(pais);
+
+	public DepartamentoEntity(final UUID id, final String nombre, final PaisEntity pais) {
 		setId(id);
 		setNombre(nombre);
+		setPais(pais);
 	}
-	
+
 	public static final DepartamentoEntity build() {
 		return new DepartamentoEntity();
 	}
-	
-	public PaisEntity getPais() {
-		return pais;
-	}
-	public DepartamentoEntity setPais(final PaisEntity pais) {
-		this.pais = pais;
-		return this;
-	}
-	public UUID getId() {
+
+	public final UUID getId() {
 		return id;
 	}
-	public DepartamentoEntity setId(final UUID id) {
+
+	public final DepartamentoEntity setId(final UUID id) {
 		this.id = id;
 		return this;
 	}
-	public String getNombre() {
+
+	public final String getNombre() {
 		return nombre;
 	}
-	public DepartamentoEntity setNombre( final String nombre) {
-		this.nombre = nombre;
+
+	public final DepartamentoEntity setNombre(final String nombre) {
+		this.nombre = TextHelper.applyTrim(nombre);
 		return this;
 	}
-	
 
+	public final PaisEntity getPais() {
+		return pais;
+	}
+
+	public final DepartamentoEntity setPais(final PaisEntity pais) {
+		this.pais = ObjectHelper.getObjectHelper().getDefaultValue(pais, new PaisEntity());
+		return this;
+	}
 }

@@ -71,10 +71,10 @@ public final class CiudadAzureSqlDAO extends SqlConnection implements CiudadDAO 
 	        sentenciaSql.append(" AND departamento = ?");
 	        parametros.add(data.getDepartamento().getId());
 	    }
+
 	    final List<CiudadEntity> ciudades = new ArrayList<>();
 
-	    try (final PreparedStatement sentenciaSqlPreparada = getConexion()
-	            .prepareStatement(sentenciaSql.toString())) {
+	    try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciaSql.toString())) {
 
 	        for (int i = 0; i < parametros.size(); i++) {
 	            sentenciaSqlPreparada.setObject(i + 1, parametros.get(i));
@@ -85,30 +85,28 @@ public final class CiudadAzureSqlDAO extends SqlConnection implements CiudadDAO 
 	                CiudadEntity ciudad = new CiudadEntity();
 	                ciudad.setId((UUID) resultado.getObject("id"));
 	                ciudad.setNombre(resultado.getString("nombre"));
+
 	                DepartamentoEntity departamento = new DepartamentoEntity();
 	                departamento.setId((UUID) resultado.getObject("departamento"));
 	                ciudad.setDepartamento(departamento);
+
 	                ciudades.add(ciudad);
 	            }
 	        }
-	        
+
 	    } catch (final SQLException excepcion) {
 	        var mensajeUsuario = "Se ha presentado un problema tratando de consultar las ciudades. Por favor, contacte al administrador del sistema.";
-	        var mensajeTecnico = "Se ha presentado una SQLException tratando de realizar la consulta de las ciudades en la tabla \"Ciudad\" de la base de datos Azure SQL.";
-
+	        var mensajeTecnico = "Se ha presentado una SQLException tratando de realizar la consulta de las ciudades en la tabla 'Ciudad' de la base de datos Azure SQL.";
 	        throw new DataPCHException(mensajeUsuario, mensajeTecnico, excepcion);
-
 	    } catch (final Exception excepcion) {
 	        var mensajeUsuario = "Se ha presentado un problema tratando de consultar las ciudades. Por favor, contacte al administrador del sistema.";
-	        var mensajeTecnico = "Se ha presentado un problema INESPERADO con una excepción de tipo Exception tratando de realizar la consulta de las ciudades en la tabla \"Ciudad\" de la base de datos Azure SQL.";
-
+	        var mensajeTecnico = "Se ha presentado un problema INESPERADO con una excepción de tipo Exception tratando de realizar la consulta de las ciudades en la tabla 'Ciudad' de la base de datos Azure SQL.";
 	        throw new DataPCHException(mensajeUsuario, mensajeTecnico, excepcion);
 	    }
 
-
-
-		return ciudades;
+	    return ciudades;
 	}
+
 
 	@Override
 	public void eliminar(UUID id) {

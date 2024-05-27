@@ -3,14 +3,18 @@ package co.edu.uco.pch.dto;
 import java.util.UUID;
 
 import co.edu.uco.pch.crosscutting.helpers.TextHelper;
+import co.edu.uco.pch.crosscutting.helpers.UUIDHelper;
 
 public class CiudadDTO {
 	private DepartamentoDTO departamento;
 	private UUID id;
 	private String nombre;
 	
+	
 	public CiudadDTO() {
 		super();
+		setId(UUIDHelper.getDefault());
+		setNombre(TextHelper.EMPTY);
 	}
 	
 	public CiudadDTO(final PaisDTO pais,final UUID id,final String nombre) {
