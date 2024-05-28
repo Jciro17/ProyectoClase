@@ -2,11 +2,13 @@ package co.edu.uco.pch.business.assembler.dto.impl;
 
 import static co.edu.uco.pch.crosscutting.helpers.ObjectHelper.getObjectHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.uco.pch.business.assembler.dto.AssemblerDTO;
 import co.edu.uco.pch.business.domain.DepartamentoDomain;
 import co.edu.uco.pch.business.domain.PaisDomain;
+import co.edu.uco.pch.crosscutting.helpers.ObjectHelper;
 import co.edu.uco.pch.dto.DepartamentoDTO;
 import co.edu.uco.pch.dto.PaisDTO;
 
@@ -38,15 +40,16 @@ public class DepartamentoAssemblerDTO implements AssemblerDTO<DepartamentoDomain
 	}
 
 	@Override
-	public List<DepartamentoDomain> toDomainCollection(List<DepartamentoDTO> entityCollection) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<DepartamentoDomain> toDomainCollection(List<DepartamentoDTO> dtoCollection) {
+		var dtoCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(dtoCollection, new ArrayList<DepartamentoDTO>());
+		return dtoCollectionTmp.stream().map(this :: toDomain).toList();
 	}
 
 	@Override
 	public List<DepartamentoDTO> toDTOCollection(List<DepartamentoDomain> domainCollection) {
-		// TODO Auto-generated method stub
-		return null;
+		var domainCollectionTmp = ObjectHelper.getObjectHelper().getDefaultValue(domainCollection, new ArrayList<DepartamentoDomain>());
+		return domainCollectionTmp.stream().map(this :: toDTO).toList();
+
 	}
 
 }

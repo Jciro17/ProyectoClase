@@ -42,7 +42,6 @@ public final class CiudadEntity {
 
 	public final CiudadEntity setNombre(final String nombre) {
 		this.nombre = TextHelper.applyTrim(nombre);
-		;
 		return this;
 	}
 

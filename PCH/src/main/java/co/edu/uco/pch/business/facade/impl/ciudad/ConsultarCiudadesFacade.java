@@ -15,9 +15,9 @@ public final class ConsultarCiudadesFacade implements FacadeWithReturn <CiudadDT
 
 
     private DAOFactory daoFactory;
-    public ConsultarCiudadesFacade(){
-         
-     }
+	public ConsultarCiudadesFacade() {
+		daoFactory = DAOFactory.getFactory();
+	}
     
     @Override
     public final List<CiudadDTO> execute(final CiudadDTO dto) {

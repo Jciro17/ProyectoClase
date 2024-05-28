@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 import co.edu.uco.pch.crosscutting.exceptions.custom.DataPCHException;
+import co.edu.uco.pch.crosscutting.exceptions.messagecatalog.MessageCatalogStrategy;
+import co.edu.uco.pch.crosscutting.exceptions.messagecatalog.data.CodigoMensaje;
 import co.edu.uco.pch.crosscutting.helpers.ObjectHelper;
 import co.edu.uco.pch.crosscutting.helpers.TextHelper;
 import co.edu.uco.pch.data.dao.entity.CiudadDAO;
@@ -16,46 +18,53 @@ import co.edu.uco.pch.data.dao.entity.concrete.SqlConnection;
 import co.edu.uco.pch.entity.CiudadEntity;
 import co.edu.uco.pch.entity.DepartamentoEntity;
 
-public final class CiudadAzureSqlDAO extends SqlConnection implements CiudadDAO {
+public final class CiudadAzureSqlDAO extends SqlConnection implements CiudadDAO{
 
 	public CiudadAzureSqlDAO(final Connection conexion) {
 		super(conexion);
+		// TODO Auto-generated constructor stub
 	}
 	
-
 	@Override
-	public final void crear(CiudadEntity data) {
-		final StringBuilder sentenciaSql = new StringBuilder ();
+	public final void crear(final CiudadEntity data) {
+		final StringBuilder sentenciaSQL = new StringBuilder();
 		
-		sentenciaSql.append("INSERT INTO Ciudad (id, nombre, departamento) ");
-		sentenciaSql.append("SELECT ?,?,?");
+		sentenciaSQL.append("INSERT INTO Ciudad(id,nombre,departamento)");
+		sentenciaSQL.append("SELECT ?,?,?");
+	
 		
-		try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciaSql.toString())){
+		try (final PreparedStatement sentenciaSQLPreparada = getConexion().prepareStatement(sentenciaSQL.toString())){
+			sentenciaSQLPreparada.setObject(1,data.getId() );
+			sentenciaSQLPreparada.setString(2, data.getNombre());
+			sentenciaSQLPreparada.setObject(3, data.getDepartamento().getId());
 			
-			sentenciaSqlPreparada.setObject(1, data.getId());
-			sentenciaSqlPreparada.setString(2, data.getNombre());
-			sentenciaSqlPreparada.setObject(3, data.getDepartamento().getId());
+			sentenciaSQLPreparada.executeUpdate();
 			
-			sentenciaSqlPreparada.executeUpdate();
+		}catch (final SQLException excepcion) {
+			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00023);
+			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el insert de la ciudad \"${1}\" en la tabla pais"
+					+ "de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada ";
+			throw new DataPCHException(mensajeTecnico, mensajeUsuario,excepcion);
 			
-		} catch (final SQLException excepcion) {
-			var mensajeUsuario = "Se ha presentado un problema tratando de crear la ciudad \"${1}\".Por favor intente de nuevo y si el problema persiste contacte con el administrador...";
-			var mensajeTecnico = "Se ha presentado una excepcion de tipo SQLException tratando de realizar el insert de la ciudad \"${1}\" en la tabla \"Pais\" de la base de datos Azure SQL. Para mas detalles, revise de forma completa la excepcion raiz presentada..";
-			throw new DataPCHException(mensajeTecnico, mensajeUsuario, excepcion);
-		} catch (final Exception excepcion) {
-			var mensajeUsuario = "Se ha presentado un problema tratando de crear la ciudad \"${1}\".Por favor intente de nuevo y si el problema persiste contacte con el administrador...";
-			var mensajeTecnico = "Se ha presentado un problema INESPERADO de tipo Exception tratando de realizar el insert de la ciudad \"${1}\" en la tabla \"Pais\" de la base de datos Azure SQL. Para mas detalles, revise de forma completa la excepcion raiz presentada..";
-			throw new DataPCHException(mensajeTecnico, mensajeUsuario, excepcion);
-		}	
-		
-		
+		}catch (final Exception excepcion) {
+			var mensajeUsuario = "se ha presentado un prblema tratando de crear la ciudad \"${1}\" y si el problemas contacte a el administrador ...";
+			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el insert de la ciudad \"${1}\" en la tabla pais"
+					+ "de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada ";
+			throw new DataPCHException(mensajeTecnico, mensajeUsuario,excepcion);
+		}
 		
 	}
 
 	@Override
-	public List<CiudadEntity> consultar(CiudadEntity data) {
+	public List<CiudadEntity> consultar(final CiudadEntity data) {
+
 	    final StringBuilder sentenciaSql = new StringBuilder();
-	    sentenciaSql.append("SELECT id, nombre, departamento FROM Ciudad WHERE 1=1");
+	    sentenciaSql.append("SELECT c.id, c.nombre, d.id as idDepartamento, d.nombre as nombreDepartamento, p.id as idPais, p.nombre as nombrePais");
+	    sentenciaSql.append(" FROM Ciudad c");
+	    sentenciaSql.append(" INNER JOIN Departamento d ON c.departamento = d.id");
+	    sentenciaSql.append(" INNER JOIN Pais p ON d.pais = p.id");
+	    sentenciaSql.append(" WHERE 1=1");
+
 
 	    final List<Object> parametros = new ArrayList<>();
 
@@ -74,7 +83,8 @@ public final class CiudadAzureSqlDAO extends SqlConnection implements CiudadDAO 
 
 	    final List<CiudadEntity> ciudades = new ArrayList<>();
 
-	    try (final PreparedStatement sentenciaSqlPreparada = getConexion().prepareStatement(sentenciaSql.toString())) {
+	    try (final PreparedStatement sentenciaSqlPreparada = getConexion()
+	            .prepareStatement(sentenciaSql.toString())) {
 
 	        for (int i = 0; i < parametros.size(); i++) {
 	            sentenciaSqlPreparada.setObject(i + 1, parametros.get(i));
@@ -85,28 +95,28 @@ public final class CiudadAzureSqlDAO extends SqlConnection implements CiudadDAO 
 	                CiudadEntity ciudad = new CiudadEntity();
 	                ciudad.setId((UUID) resultado.getObject("id"));
 	                ciudad.setNombre(resultado.getString("nombre"));
-
 	                DepartamentoEntity departamento = new DepartamentoEntity();
 	                departamento.setId((UUID) resultado.getObject("departamento"));
 	                ciudad.setDepartamento(departamento);
-
 	                ciudades.add(ciudad);
 	            }
 	        }
 
 	    } catch (final SQLException excepcion) {
 	        var mensajeUsuario = "Se ha presentado un problema tratando de consultar las ciudades. Por favor, contacte al administrador del sistema.";
-	        var mensajeTecnico = "Se ha presentado una SQLException tratando de realizar la consulta de las ciudades en la tabla 'Ciudad' de la base de datos Azure SQL.";
+	        var mensajeTecnico = "Se ha presentado una SQLException tratando de realizar la consulta de las ciudades en la tabla \"Ciudad\" de la base de datos Azure SQL.";
+
 	        throw new DataPCHException(mensajeUsuario, mensajeTecnico, excepcion);
+
 	    } catch (final Exception excepcion) {
 	        var mensajeUsuario = "Se ha presentado un problema tratando de consultar las ciudades. Por favor, contacte al administrador del sistema.";
-	        var mensajeTecnico = "Se ha presentado un problema INESPERADO con una excepción de tipo Exception tratando de realizar la consulta de las ciudades en la tabla 'Ciudad' de la base de datos Azure SQL.";
+	        var mensajeTecnico = "Se ha presentado un problema INESPERADO con una excepción de tipo Exception tratando de realizar la consulta de las ciudades en la tabla \"Ciudad\" de la base de datos Azure SQL.";
+
 	        throw new DataPCHException(mensajeUsuario, mensajeTecnico, excepcion);
 	    }
 
 	    return ciudades;
 	}
-
 
 	@Override
 	public void eliminar(UUID id) {
@@ -120,12 +130,14 @@ public final class CiudadAzureSqlDAO extends SqlConnection implements CiudadDAO 
 			sentenciaSQLPreparada.executeUpdate();
 		}catch(final SQLException excepcion) {
 			var mensajeUsuario = "se ha presentado un prblemao tratando de eliminar la ciudad \"${1}\" y si el problemas contacte a el administrador ...";
-			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el delete de la ciudad \\\"${1}\\\" en la tabla pais\"\r\n" + "+ \"de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada";
+			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el delete de la ciudad \\\"${1}\\\" en la tabla pais\"\r\n"
+					+ "					+ \"de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada";
 			throw new DataPCHException(mensajeTecnico, mensajeUsuario);
 			
 		}catch(final Exception excepcion) {
 			var mensajeUsuario = "\"se ha presentado un prblema tratando de eliminar la ciudad \\\"${1}\\\" y si el problemas contacte a el administrador ...\"";
-			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el delete de la ciudad \"${1}\" en la tabla pais" + "de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada ";
+			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el delete de la ciudad \"${1}\" en la tabla pais"
+					+ "de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada ";
 			throw new DataPCHException(mensajeTecnico, mensajeUsuario);
 		}
 		
@@ -152,15 +164,20 @@ public final class CiudadAzureSqlDAO extends SqlConnection implements CiudadDAO 
 			
 		}catch (final SQLException excepcion) {
 			var mensajeUsuario = "se ha presentado un prblemao tratando de modificar la ciudad \\\"${1}\\\" y si el problemas contacte a el administrador ...";
-			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el update de la ciudad \"${1}\" en la tabla pais" + "de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada ";
+			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el update de la ciudad \"${1}\" en la tabla pais"
+					+ "de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada ";
 			throw new DataPCHException(mensajeTecnico, mensajeUsuario,excepcion);
 			
 		}catch (final Exception excepcion) {
 			var mensajeUsuario = "se ha presentado un problema tratando de modificar la ciudad \"${1}\" y si el problemas contacte a el administrador ...";
-			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el update de la ciudad \"${1}\" en la tabla pais" + "de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada ";
+			var mensajeTecnico = "Se ha presentado una excepcion se tipo SQLexception tatando de realizar el update de la ciudad \"${1}\" en la tabla pais"
+					+ "de la base de datos azureSql.para mas detalles revise de forma completa la excepcionRaiz presentada ";
 			throw new DataPCHException(mensajeTecnico, mensajeUsuario,excepcion);
+		
 	}
 	
 	}
+	
+	
 	
 }
