@@ -6,6 +6,8 @@ import co.edu.uco.pch.business.assembler.entity.impl.DepartamentoAssemblerEntity
 import co.edu.uco.pch.business.domain.CiudadDomain;
 import co.edu.uco.pch.business.usecase.UseCaseWithoutReturn;
 import co.edu.uco.pch.crosscutting.exceptions.custom.BusinessPCHException;
+import co.edu.uco.pch.crosscutting.exceptions.messagecatalog.MessageCatalogStrategy;
+import co.edu.uco.pch.crosscutting.exceptions.messagecatalog.data.CodigoMensaje;
 import co.edu.uco.pch.crosscutting.helpers.ObjectHelper;
 import co.edu.uco.pch.crosscutting.helpers.UUIDHelper;
 import co.edu.uco.pch.data.dao.factory.DAOFactory;
@@ -18,8 +20,8 @@ public final class RegistrarCiudad implements UseCaseWithoutReturn<CiudadDomain>
 
     public RegistrarCiudad(final DAOFactory factory){
         if(ObjectHelper.getObjectHelper().isNull(factory)){
-            var mensajeUsuario = "Se ha presentado un porblema tratando de llevar a cabo el registro de una ciudad";
-            var mensajeTecnico = "El DAOFactory para crear la ciudad llego nulo...";
+			var mensajeUsuario= MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00027);
+			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00030);
             throw new BusinessPCHException(mensajeTecnico, mensajeUsuario);
         }
         this.factory = factory;
@@ -59,7 +61,7 @@ public final class RegistrarCiudad implements UseCaseWithoutReturn<CiudadDomain>
         var resultados = factory.getCiudadDAO().consultar(ciudadEntity);
 
         if (!resultados.isEmpty()){
-            var mensajeUsuario= "Ya existe una ciudad con el nombre \"${1}\" asociado con " ;
+        	var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00032);
             throw new BusinessPCHException(mensajeUsuario);
 
         }

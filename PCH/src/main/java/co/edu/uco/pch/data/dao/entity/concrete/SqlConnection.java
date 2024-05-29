@@ -26,7 +26,7 @@ public class SqlConnection{
 	protected final void setConexion(final Connection conexion) {
 		if(!SQLHelper.isOpen(conexion)) {
 			var mensajeUsuario = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00002);
-			var mensajeTecnico = "No es posible crearq el DAO deseado con una conexion cerrada";
+			var mensajeTecnico = MessageCatalogStrategy.getContenidoMensaje(CodigoMensaje.M00046);
 			
 			throw new DataPCHException(mensajeTecnico, mensajeUsuario);
 		}
